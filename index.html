@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>reveal.js</title>
+
+    <link rel="stylesheet" href="dist/reset.css">
+    <link rel="stylesheet" href="dist/reveal.css">
+    <link rel="stylesheet" href="dist/theme/black.css" id="theme">
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>UX of code</h2>
+          <h2>+</h2>
+          <h2>KISS explained</h2>
+
+          <p>by Matteo Colucci</p>
+        </section>
+
+        <section>
+          <section>
+            <h2>UX of code</h2>
+          </section>
+
+          <section>
+            <blockquote><p>Any sufficiently advanced technology is indistinguishable from magic.</p></blockquote>
+            <p><cite><cite>– Arthur C. Clarke</cite></cite></p>
+          </section>
+
+          <section>
+            Non-devs might think software is actually magic
+          </section>
+
+          <section>
+            <blockquote><p>Wizards don't believe in magic.</p></blockquote>
+            <p><cite><cite>– Matteo Colucci</cite></cite></p>
+
+            <small class="fragment">I could talk for hours about this pointless nerdy topic, feel free to hit me up ;)</small>
+          </section>
+
+          <section>
+            Devs know how to speak to machines
+          </section>
+
+          <section>
+            <blockquote><p>With great power comes great responsibility.</p></blockquote>
+            <p><cite><cite>– Uncle Ben</cite></cite></p>
+          </section>
+
+          <section>
+            <p>Devs are interpreters between users and machines</p>
+            <p class="fragment">Devs are users of other devs' code</p>
+            <p class="fragment">Devs are interpreters between machines and other devs</p>
+          </section>
+        </section>
+
+        <section>
+          <h2>KISS principle</h2>
+          <p>Keep It Simple, Stupid</p>
+        </section>
+
+        <section>
+          <section>Keep it linear</section>
+
+          <section>
+            <p>Here is current CS behaviour, in pseudo-code:</p>
+          </section>
+
+          <section>
+            <p>boot.js</p>
+            <pre><code data-trim data-line-numbers="|7,10|13-17|16"><script type="text/template">
+              var options = new _iub.CSConfigurationMerger(
+                defaults,
+                _iub.csConfiguration
+              );
+              if (isTcfEnabled()) {
+                loadTcfLib(function() {
+                  createInstance(options);
+                });
+              } else {
+                createInstance(options);
+              }
+
+              function createInstance(options) {
+                _iub.cs = new CookieSolution(options);
+                var remoteConf = loadRemoteConfig(cs);
+                cs.preLoad();
+              }
+            </script></code></pre>
+          </section>
+
+          <section>
+            <p>iubenda_cookie_solution.js</p>
+            <pre><code data-trim data-line-numbers="4-16|15"><script type="text/template">
+              function CookieSolution(options) {
+                // ...
+
+                this.preLoad = function() {
+                  if (isBrowserNotSupported()) {
+                    return;
+                  }
+
+                  if (isBot()) {
+                    return applyConsent(true);
+                  }
+
+                  loadCcpaConsent();
+                  loadTcfConsent();
+                  loadLocalConsent();
+                };
+              }
+            </script></code></pre>
+          </section>
+
+          <section>
+            <p>cookie.js</p>
+            <pre><code data-trim data-line-numbers="|4-5|7"><script type="text/template">
+              function loadLocalConsent() {
+                var consent = loadLocalCookie('_iub_cs-' + cookiePolicyId);
+                if (consent) {
+                  _iub.cs.consent = consent;
+                  _iub.cs.start();
+                } else {
+                  loadRemoteConsent();
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section>
+            <p>cookie.js</p>
+            <pre><code data-trim data-line-numbers="|6"><script type="text/template">
+              function loadRemoteConsent() {
+                var consent = loadRemoteCookie('_iub_cs-' + cookiePolicyId);
+                if (consent) {
+                  _iub.cs.consent = consent;
+                }
+                _iub.cs.start();
+              }
+            </script></code></pre>
+          </section>
+
+          <section>tk: functions should do only one thing</section>
+        </section>
+
+        <section>
+          <section>Don't duplicate actions (DRY)</section>
+        </section>
+
+        <section>
+          <section>Avoid abstraction if not needed</section>
+        </section>
+
+        <section>
+          <section>Use pseudo-pseudo-code</section>
+        </section>
+
+        <section>
+          <section>Use ES6</section>
+        </section>
+      </div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+      });
+    </script>
+  </body>
+</html>

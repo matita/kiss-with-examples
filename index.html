@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>reveal.js</title>
+    <title>KISS explained</title>
 
     <link rel="stylesheet" href="dist/reset.css">
     <link rel="stylesheet" href="dist/reveal.css">
@@ -12,6 +12,19 @@
 
     <!-- Theme used for syntax highlighted code -->
     <link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+
+    <style>
+      .reveal blockquote p {
+        text-align: left;
+        margin-left: 20px;
+        margin-right: 20px;
+        display: block!important;
+      }
+      .reveal blockquote cite {
+        display: block;
+        text-align: right;
+      }
+    </style>
   </head>
   <body>
     <div class="reveal">
@@ -24,14 +37,16 @@
           <p>by Matteo Colucci</p>
         </section>
 
-        <section>
+        <section id="ux-of-code">
           <section>
             <h2>UX of code</h2>
           </section>
 
           <section>
-            <blockquote><p>Any sufficiently advanced technology is indistinguishable from magic.</p></blockquote>
-            <p><cite><cite>– Arthur C. Clarke</cite></cite></p>
+            <blockquote>
+              <p>Any sufficiently advanced technology is indistinguishable from magic.</p>
+              <p><cite>– Arthur C. Clarke</cite></p>
+            </blockquote>
           </section>
 
           <section>
@@ -39,8 +54,10 @@
           </section>
 
           <section>
-            <blockquote><p>Wizards don't believe in magic.</p></blockquote>
-            <p><cite><cite>– Matteo Colucci</cite></cite></p>
+            <blockquote>
+              <p>Wizards don't believe in magic.</p>
+              <p><cite>– Matteo Colucci</cite></p>
+            </blockquote>
 
             <small class="fragment">I could talk for hours about this pointless nerdy topic, feel free to hit me up ;)</small>
           </section>
@@ -50,8 +67,10 @@
           </section>
 
           <section>
-            <blockquote><p>With great power comes great responsibility.</p></blockquote>
-            <p><cite><cite>– Uncle Ben</cite></cite></p>
+            <blockquote>
+              <p>With great power comes great responsibility.</p>
+              <p><cite>– Uncle Ben</cite></p>
+            </blockquote>
           </section>
 
           <section>
@@ -59,11 +78,52 @@
             <p class="fragment">Devs are users of other devs' code</p>
             <p class="fragment">Devs are interpreters between machines and other devs</p>
           </section>
+
+          <section>
+            <ul>
+              <li>Maintainable code &gt; performant code</li>
+              <ul>
+                <li class="fragment">we work in a team with different levels of expertise</li>
+                <li class="fragment">specs change constantly (sometimes rapidly)</li>
+                <li class="fragment">compilers optimize code</li>
+              </ul>
+              <li class="fragment">otherwise we'll all be writing ASM</li>
+            </ul>
+          </section>
         </section>
 
-        <section>
-          <h2>KISS principle</h2>
-          <p>Keep It Simple, Stupid</p>
+        <section id="kiss">
+          <section>
+            <h2>KISS principle</h2>
+            <p>Keep It Simple, Stupid</p>
+          </section>
+
+          <section>
+            <blockquote>
+              <p>Complicating is easy, simplifying is difficult.</p>
+              <p><cite>- Bruno Munari</cite></p>
+            </blockquote>
+          </section>
+
+          <section>
+            <p>5 corollaries of KISS</p>
+            <small>with real-life examples</small>
+          </section>
+
+          <section>
+            <p>Premises:</p>
+            <ul>
+              <li class="fragment">We'll see "bad code" examples, but</li>
+              <li class="fragment">There's no point in blaming devs</li>
+              <li class="fragment">
+                <q>Perfect is the enemy of good</q>
+                <ul>
+                  <li>bad code that works now<br>is better than<br>perfect code that will work in months</li>
+                </ul>
+              </li>
+              <li class="fragment">It's just my opinion</li>
+            </ul>
+          </section>
         </section>
 
         <section id="keep-it-linear">

@@ -67,7 +67,7 @@
         </section>
 
         <section>
-          <section>Keep it linear</section>
+          <section><h2>Keep it linear</h2></section>
 
           <section>
             <p>Here is current CS behaviour, in pseudo-code:</p>
@@ -75,11 +75,8 @@
 
           <section>
             <p>boot.js</p>
-            <pre><code data-trim data-line-numbers="|7,10|13-17|16"><script type="text/template">
-              var options = new _iub.CSConfigurationMerger(
-                defaults,
-                _iub.csConfiguration
-              );
+            <pre><code data-line-numbers="|4,7|10-14|13"><script type="text/template">
+              getConfigurationWithDefaults();
               if (isTcfEnabled()) {
                 loadTcfLib(function() {
                   createInstance(options);
@@ -90,15 +87,15 @@
 
               function createInstance(options) {
                 _iub.cs = new CookieSolution(options);
-                var remoteConf = loadRemoteConfig(cs);
-                cs.preLoad();
+                var remoteConf = loadRemoteConfig(_iub.cs);
+                _iub.cs.preLoad();
               }
             </script></code></pre>
           </section>
 
           <section>
             <p>iubenda_cookie_solution.js</p>
-            <pre><code data-trim data-line-numbers="4-16|15"><script type="text/template">
+            <pre><code data-line-numbers="4-16|15"><script type="text/template">
               function CookieSolution(options) {
                 // ...
 
@@ -121,7 +118,7 @@
 
           <section>
             <p>cookie.js</p>
-            <pre><code data-trim data-line-numbers="|4-5|7"><script type="text/template">
+            <pre><code data-line-numbers="|4-5|7"><script type="text/template">
               function loadLocalConsent() {
                 var consent = loadLocalCookie('_iub_cs-' + cookiePolicyId);
                 if (consent) {
@@ -136,7 +133,7 @@
 
           <section>
             <p>cookie.js</p>
-            <pre><code data-trim data-line-numbers="|6"><script type="text/template">
+            <pre><code data-line-numbers="|6"><script type="text/template">
               function loadRemoteConsent() {
                 var consent = loadRemoteCookie('_iub_cs-' + cookiePolicyId);
                 if (consent) {
@@ -149,7 +146,7 @@
 
           <section>
             <p>iubenda_cookie_solution.js</p>
-            <pre><code data-trim data-line-numbers="|6"><script type="text/template">
+            <pre><code data-line-numbers="|6"><script type="text/template">
               this.start = function() {
                 tracker.start();
                 if (somePreferencesAreMissing()) {
@@ -201,13 +198,98 @@
               <li class="fragment">their name is a lie</li>
               <li class="fragment">you have to read the whole code to know what's going on</li>
               <li class="fragment">modules don't have a clear hierarchy</li>
+              <li class="fragment">modules change properties of other modules</li>
               <li class="fragment">changing order of things is hard</li>
             </ul>
+          </section>
+
+          <section>
+            <p>How it could be:</p>
+            <pre><code><script type="text/template">
+              function init() {
+                getConfigurationWithDefaults();
+                loadDependencies(options);
+                loadPreferences();
+                if (somePreferencesAreMissing()) {
+                  showBanner();
+                } else {
+                  activateBlockedScripts();
+                }
+              }
+            </script></code></pre>
           </section>
         </section>
 
         <section>
-          <section>Don't duplicate actions (DRY)</section>
+          <section>
+            <h2>Logically (and graphically) separate actions</h2>
+            <p>(mostly if they're duplicated)</p>
+          </section>
+
+          <section>
+            <pre><code>
+              floatingPreferencesButtonCaption: true
+            </code></pre>
+            <p>English</p>
+            <img src="http://matteo.colucci.s3.iubenda.com/Screen-Shot-2020-10-11-17-38-48.png">
+            <p>Italian</p>
+            <img src="http://matteo.colucci.s3.iubenda.com/Screen-Shot-2020-10-11-17-41-08.png">
+          </section>
+
+          <section>
+            <pre><code>
+              floatingPreferencesButtonCaption: 'Privacy'
+            </code></pre>
+            <img src="http://matteo.colucci.s3.iubenda.com/Screen-Shot-2020-10-11-17-42-23.png">
+          </section>
+
+          <section>
+            <pre><code>
+              floatingPreferencesButtonCaption: false // (default)
+            </code></pre>
+            <img src="http://matteo.colucci.s3.iubenda.com/Screen-Shot-2020-10-11-17-37-26.png">
+          </section>
+
+          <section>
+            <p>First code proposal</p>
+            <pre><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                floatingBtn.setAttribute('data-tp-label', options.floatingPreferencesButtonCaption);
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                floatingBtn.setAttribute('data-tp-label', t('floating_preferences_button.caption'));
+              }
+            </script></code></pre>
+          </section>
+
+          <section>
+            <p>Why it's bad:</p>
+            <p class="fragment">if this <u>do this</u> otherwise <u>do that</u></p>
+            <p class="fragment">but</p>
+            <p class="fragment">do this == do that == display a label</p>
+          </section>
+
+          <section>
+            <p>What if we have to transform the caption?</p>
+            <p class="fragment">We'll likely end up with more duplicate code</p>
+          </section>
+
+          <section>
+            <p>How it could be:</p>
+            <pre><code><script type="text/template">
+              var caption;
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                caption = options.floatingPreferencesButtonCaption;
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                caption = t('floating_preferences_button.caption');
+              }
+
+              if (caption) {
+                floatingBtn.setAttribute('data-tp-label', caption);
+              }
+            </script></code></pre>
+          </section>
+
+
         </section>
 
         <section>
@@ -229,6 +311,14 @@
     <script src="plugin/markdown/markdown.js"></script>
     <script src="plugin/highlight/highlight.js"></script>
     <script>
+      document.querySelectorAll('code').forEach(function(code) {
+        code.classList.add('js');
+        code.setAttribute('data-trim', true);
+        if (!code.getAttribute('data-line-numbers')) {
+          code.setAttribute('data-line-numbers', true);
+        }
+      });
+
       // More info about initialization & config:
       // - https://revealjs.com/initialization/
       // - https://revealjs.com/config/

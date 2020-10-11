@@ -147,7 +147,63 @@
             </script></code></pre>
           </section>
 
-          <section>tk: functions should do only one thing</section>
+          <section>
+            <p>iubenda_cookie_solution.js</p>
+            <pre><code data-trim data-line-numbers="|6"><script type="text/template">
+              this.start = function() {
+                tracker.start();
+                if (somePreferencesAreMissing()) {
+                  ui.start();
+                } else {
+                  activateBlockedScripts();
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section>
+            <p>So we have a nested behaviour:</p>
+            <ul class="fragment">
+              <li>
+                boot.js :: init
+                <ul class="fragment">
+                  <li>
+                    boot.js :: createInstance
+                    <ul class="fragment">
+                      <li>
+                        iubenda_cookie_solution.js :: preLoad
+                        <ul class="fragment">
+                          <li>
+                            cookie.js :: loadLocalConsent
+                            <ul class="fragment">
+                              <li>iubenda_cookie_solution.js :: start</li>
+                              <li>
+                                cookie.js :: loadRemoteConsent
+                                <ul class="fragment">
+                                  <li>iubenda_cookie_solution.js :: start</li>
+                                </ul>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <p>Why it's bad:</p>
+            <ul>
+              <li class="fragment">a single function does a lot of things</li>
+              <li class="fragment">their name is a lie</li>
+              <li class="fragment">you have to read the whole code to know what's going on</li>
+              <li class="fragment">modules don't have a clear hierarchy</li>
+              <li class="fragment">changing order of things is hard</li>
+            </ul>
+          </section>
         </section>
 
         <section>

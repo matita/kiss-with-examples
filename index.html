@@ -24,6 +24,10 @@
         display: block;
         text-align: right;
       }
+      .reveal .hljs td {
+        font-size: .8em;
+        line-height: 1.1;
+      }
     </style>
   </head>
   <body>
@@ -113,8 +117,15 @@
           <section>
             <p>Premises:</p>
             <ul>
-              <li class="fragment">We'll see "bad code" examples, but</li>
-              <li class="fragment">There's no point in blaming devs</li>
+              <li class="fragment">
+                We'll see "bad code" examples
+                <ul>
+                  <li class="fragment">there's no right way<span class="fragment">, but there are wrong ways</span></li>
+                  <li class="fragment">it's easier to understand what's wrong than how right should be</li>
+                  <li class="fragment">there's no point in blaming devs</li>
+                  <li class="fragment">assumption then might be different than now</li>
+                </ul>
+              </li>
               <li class="fragment">
                 <q>Perfect is the enemy of good</q>
                 <ul>
@@ -361,6 +372,132 @@
         <section>
           <section>
             <h2>Avoid abstraction if not needed</h2>
+          </section>
+
+          <section data-transition="fade">
+            <p>How it was</p>
+            <pre data-id="process-data"><code><script type="text/template">
+              const cmpApi = new CmpApi({
+                getTCData: addAcmString,
+                addEventListener: addAcmString,
+              });
+
+              function addAcmString(next, tcData, success) {
+                if (tcData && acmString) {
+                  tcData.addtlConsent = acmString;
+                }
+
+                if (typeof next === 'function') {
+                  next(tcData, success);
+                } else {
+                  console.error('next is not a function')
+                }
+              };
+            </script></code></pre>
+          </section>
+
+          <section data-transition="fade">
+            <p>The proposal</p>
+            <pre data-id="process-data"><code><script type="text/template">
+              const cmpApi = new CmpApi({
+                getTCData: processData,
+                addEventListener: processData,
+              });
+
+              const processData = use(
+                defaultMiddleware,
+                addAcmString,
+                removeOutOfBand,
+              );
+
+              function use(...middlewares) {
+                return function combinedMiddlewares(next, ...params) {
+                  const fn = middlewares.reduce((prev, cur) => (
+                    cur.bind(this, prev)
+                  ), next);
+
+                  return fn.apply(this, params);
+                }
+              };
+
+              function defaultMiddleware(next, tcData, success) {
+                if (typeof next === 'function') {
+                  next(tcData, success);
+                } else {
+                  console.error('next is not a function');
+                }
+              };
+
+              function addAcmString(next, tcData, success) {
+                if (tcData && acmString) {
+                  tcData.addtlConsent = acmString;
+                }
+                next(tcData, success);
+              };
+
+              function removeOutOfBand(next, tcData, success) {
+                if (isServiceSpecific && tcData) {
+                  delete tcData.outOfBand;
+                }
+                next(tcData, success);
+              };
+            </script></code></pre>
+          </section>
+
+          <section>
+            <h3>Why it's bad</h3>
+            <ul>
+              <li class="fragment">It's clever<span class="fragment"> but too clever</span></li>
+              <li class="fragment">
+                It adds a layer of abstraction
+                <ul>
+                  <li class="fragment">harder to read</li>
+                  <li class="fragment">harder to debug</li>
+                  <li class="fragment">harder to understand for unexperienced devs</li>
+                </ul>
+              </li>
+              <li class="fragment">
+                It's too much code
+                <ul>
+                  <li class="fragment">not necessarily bad, but here it is since...</li>
+                </ul>
+              </li>
+              <li class="fragment">
+                It's not needed
+                <ul>
+                  <li class="fragment">middlewares are good for external devs</li>
+                  <li class="fragment">but we're in control of all the code</li>
+                </ul>
+              </li>
+            </ul>
+          </section>
+
+          <section data-transition="fade">
+            <p>The result</p>
+            <pre data-id="process-data"><code><script type="text/template">
+              const cmpApi = new CmpApi({
+                getTCData: processData,
+                addEventListener: processData,
+              });
+
+              function processData(next, tcData, success) {
+                addAcmString(tcData);
+                removeOutOfBand(tcData);
+                next(tcData, success);
+              };
+
+              function addAcmString(tcData) {
+                if (tcData && acmString) {
+                  tcData.addtlConsent = acmString;
+                }
+              };
+
+              function removeOutOfBand(tcData) {
+                if (isServiceSpecific && tcData) {
+                  delete tcData.outOfBand;
+                }
+              };
+            </script></code></pre>
           </section>
 
           <section>

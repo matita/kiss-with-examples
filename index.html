@@ -333,7 +333,7 @@
             <pre><code><script type="text/template">
               function init() {
                 getConfigurationWithDefaults();
-                loadDependencies(options);
+                loadDependencies();
                 loadPreferences();
                 if (somePreferencesAreMissing()) {
                   showBanner();
@@ -348,7 +348,7 @@
         <section id="separate-actions">
           <section>
             <h2>Logically (and graphically) separate actions</h2>
-            <p>(mostly if they're duplicated)</p>
+            <p>(mostly if they're in if...else)</p>
           </section>
 
           <section>
@@ -697,6 +697,177 @@
                 caption = options.floatingPreferencesButtonCaption();
               }
 
+              if (caption) {
+                floatingBtn.innerHTML = '<span>' + caption + '?</span>');
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>You might think that because of DRY you could wrap the displaying in a function</p>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                floatingBtn.innerHTML = '<span>' + options.floatingPreferencesButtonCaption + '?</span>';
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                floatingBtn.innerHTML = '<span>' + t('floating_preferences_button.caption') + '?</span>';
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                var caption = options.floatingPreferencesButtonCaption();
+                if (caption) {
+                  floatingBtn.innerHTML = '<span>' caption + '?</span>';
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>You might think that because of DRY you could wrap the displaying in a function</p>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                displayCaption(options.floatingPreferencesButtonCaption);
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                displayCaption(t('floating_preferences_button.caption'));
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                var caption = options.floatingPreferencesButtonCaption();
+                if (caption) {
+                  displayCaption(caption);
+                }
+              }
+
+              function displayCaption(caption) {
+                floatingBtn.innerHTML = '<span>' caption + '?</span>';
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>But you ARE repeating <code>displayCaption</code></p>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                displayCaption(options.floatingPreferencesButtonCaption);
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                displayCaption(t('floating_preferences_button.caption'));
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                var caption = options.floatingPreferencesButtonCaption();
+                if (caption) {
+                  displayCaption(caption);
+                }
+              }
+
+              function displayCaption(caption) {
+                floatingBtn.innerHTML = '<span>' caption + '?</span>';
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if you had to expose an API:</p>
+            <ul>
+              <li class="fragment">before displayCaption if any</li>
+              <li class="fragment">with true if a caption is shown</li>
+              <li class="fragment">with false if a caption is not shown</li>
+            </ul>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                displayCaption(options.floatingPreferencesButtonCaption);
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                displayCaption(t('floating_preferences_button.caption'));
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                var caption = options.floatingPreferencesButtonCaption();
+                if (caption) {
+                  displayCaption(caption);
+                }
+              }
+
+              function displayCaption(caption) {
+                floatingBtn.innerHTML = '<span>' caption + '?</span>';
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if you had to expose an API:</p>
+            <ul>
+              <li>before displayCaption if any</li>
+              <li>with true if a caption is shown</li>
+              <li>with false if a caption is not shown</li>
+            </ul>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                updateSomeApi(true);
+                displayCaption(options.floatingPreferencesButtonCaption);
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                updateSomeApi(true);
+                displayCaption(t('floating_preferences_button.caption'));
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                var caption = options.floatingPreferencesButtonCaption();
+                if (caption) {
+                  updateSomeApi(true);
+                  displayCaption(caption);
+                } else {
+                  updateSomeApi(false);
+                }
+              } else {
+                updateSomeApi(false);
+              }
+
+              function displayCaption(caption) {
+                floatingBtn.innerHTML = '<span>' caption + '?</span>';
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>If it was already well designed:</p>
+            <pre data-id="caption-designed"><code><script type="text/template">
+              var caption;
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                caption = options.floatingPreferencesButtonCaption;
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                caption = t('floating_preferences_button.caption');
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                caption = options.floatingPreferencesButtonCaption();
+              }
+
+              if (caption) {
+                floatingBtn.innerHTML = '<span>' + caption + '?</span>');
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>If it was already well designed:</p>
+            <pre data-id="caption-designed"><code><script type="text/template">
+              var caption;
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                caption = options.floatingPreferencesButtonCaption;
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                caption = t('floating_preferences_button.caption');
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                caption = options.floatingPreferencesButtonCaption();
+              }
+
+              if (caption) {
+                updateSomeApi(true);
+                floatingBtn.innerHTML = '<span>' + caption + '?</span>');
+              } else {
+                updateSomeApi(false);
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>Or better:</p>
+            <pre data-id="caption-designed"><code><script type="text/template">
+              var caption;
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                caption = options.floatingPreferencesButtonCaption;
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                caption = t('floating_preferences_button.caption');
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                caption = options.floatingPreferencesButtonCaption();
+              }
+
+              updateSomeApi(!!caption);
               if (caption) {
                 floatingBtn.innerHTML = '<span>' + caption + '?</span>');
               }

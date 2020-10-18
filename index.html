@@ -141,12 +141,21 @@
           <section><h2>Keep it linear</h2></section>
 
           <section>
-            <p>Here is current CS behaviour, in pseudo-code:</p>
+            <p>What does CS do:</p>
+            <ul>
+              <li class="fragment">shows a banner if user didn't express preferences</li>
+              <li class="fragment">activates scripts if user expressed preferences</li>
+            </ul>
+          </section>
+
+          <section>
+            <p>Let's search for the code to show the banner</p>
+            <p class="fragment">Warning: the following is mostly pseudo code</p>
           </section>
 
           <section>
             <p>boot.js</p>
-            <pre><code data-line-numbers="|4,7|10-14|13"><script type="text/template">
+            <pre><code data-line-numbers="1-8|4,7|10-14|13"><script type="text/template">
               getConfigurationWithDefaults();
               if (isTcfEnabled()) {
                 loadTcfLib(function() {
@@ -217,15 +226,50 @@
 
           <section>
             <p>iubenda_cookie_solution.js</p>
-            <pre><code data-line-numbers="|6"><script type="text/template">
-              this.start = function() {
-                tracker.start();
-                if (somePreferencesAreMissing()) {
-                  ui.start();
-                } else {
-                  activateBlockedScripts();
-                }
+            <pre><code data-line-numbers="4-11|7"><script type="text/template">
+              function CookieSolution(options) {
+                // ...
+
+                this.start = function() {
+                  tracker.start();
+                  if (somePreferencesAreMissing()) {
+                    ui.start();
+                  } else {
+                    activateBlockedScripts();
+                  }
+                };
               }
+            </script></code></pre>
+          </section>
+
+          <section>
+            <p>ui.js</p>
+            <pre><code data-line-numbers="6-14|9|4"><script type="text/template">
+              function UI() {
+                // ...
+
+                this.setUpBanner = _iub.bannerRenderer.bind(this);
+
+                this.start = function() {
+                  if (somePreferencesAreMissing()) {
+                    this.bindBannerEvents();
+                    this.setUpBanner();
+                  }
+
+                  this.bindOtherEvents();
+                  cs.csReady();
+                };
+              }
+            </script></code></pre>
+          </section>
+
+          <section>
+            <p>banner_renderer.js</p>
+            <pre><code data-line-numbers="|3"><script type="text/template">
+              _iub.bannerRenderer = function() {
+                var banner = createBannerDomElement();
+                document.body.appendChild(banner);
+              };
             </script></code></pre>
           </section>
 
@@ -248,7 +292,17 @@
                               <li>
                                 cookie.js :: loadRemoteConsent
                                 <ul class="fragment">
-                                  <li>iubenda_cookie_solution.js :: start</li>
+                                  <li>
+                                    iubenda_cookie_solution.js :: start
+                                    <ul>
+                                      <li class="fragment">
+                                        ui.js :: start
+                                        <ul>
+                                          <li class="fragment">banner_renderer.js :: bannerRenderer</li>
+                                        </ul>
+                                      </li>
+                                    </ul>
+                                  </li>
                                 </ul>
                               </li>
                             </ul>
@@ -339,14 +393,9 @@
             <p class="fragment">do this == do that == display a label</p>
           </section>
 
-          <section>
-            <p>What if we have to transform the caption?</p>
-            <p class="fragment">We'll likely end up with more duplicate code</p>
-          </section>
-
-          <section>
+          <section data-auto-animate>
             <p>How it could be:</p>
-            <pre><code><script type="text/template">
+            <pre data-id="caption"><code><script type="text/template">
               var caption;
               if (typeof options.floatingPreferencesButtonCaption === 'string') {
                 caption = options.floatingPreferencesButtonCaption;
@@ -360,12 +409,298 @@
             </script></code></pre>
           </section>
 
-          <section>
+          <section data-auto-animate>
             <p>So we have two clearly separated sections/actions:</p>
-            <ol>
-              <li class="fragment">get the caption</li>
-              <li class="fragment">display the caption (if needed)</li>
-            </ol>
+            <pre data-id="caption"><code data-line-numbers="1-7|9-12"><script type="text/template">
+              // Get the caption
+              var caption;
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                caption = options.floatingPreferencesButtonCaption;
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                caption = t('floating_preferences_button.caption');
+              }
+
+              // Display the caption
+              if (caption) {
+                floatingBtn.setAttribute('data-tp-label', caption);
+              }
+            </script></code></pre>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>The broken window theory</h2>
+          </section>
+
+          <section>
+            <p>Why rejecting PR for something that small?</p>
+          </section>
+
+          <section>
+            <blockquote>
+              <p>If a window in a building is broken and is left unrepaired, all the rest of the windows will soon be broken.</p>
+              <p><cite>- <a href="https://en.wikipedia.org/wiki/Broken_windows_theory">Wikipedia article</a></cite></p>
+            </blockquote>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if...</p>
+            <ul>
+              <li>we want to add a "!" at the end of the caption?</li>
+            </ul>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                floatingBtn.setAttribute('data-tp-label', options.floatingPreferencesButtonCaption);
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                floatingBtn.setAttribute('data-tp-label', t('floating_preferences_button.caption'));
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if...</p>
+            <ul>
+              <li>we want to add a "!" at the end of the caption?</li>
+            </ul>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                floatingBtn.setAttribute('data-tp-label', options.floatingPreferencesButtonCaption + '!');
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                floatingBtn.setAttribute('data-tp-label', t('floating_preferences_button.caption') + '!');
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if...</p>
+            <ul>
+              <li>we want to add a "!" at the end of the caption?</li>
+              <li>customers could specify a function?</li>
+            </ul>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                floatingBtn.setAttribute('data-tp-label', options.floatingPreferencesButtonCaption + '!');
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                floatingBtn.setAttribute('data-tp-label', t('floating_preferences_button.caption') + '!');
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if...</p>
+            <ul>
+              <li>we want to add a "!" at the end of the caption?</li>
+              <li>customers could specify a function?</li>
+            </ul>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                floatingBtn.setAttribute('data-tp-label', options.floatingPreferencesButtonCaption + '!');
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                floatingBtn.setAttribute('data-tp-label', t('floating_preferences_button.caption') + '!');
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                floatingBtn.setAttribute('data-tp-label', options.floatingPreferencesButtonCaption() + '!');
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if...</p>
+            <ul>
+              <li>we want to add a "!" at the end of the caption?</li>
+              <li>customers could specify a function?</li>
+              <li>the function could return empty string?</li>
+            </ul>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                floatingBtn.setAttribute('data-tp-label', options.floatingPreferencesButtonCaption + '!');
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                floatingBtn.setAttribute('data-tp-label', t('floating_preferences_button.caption') + '!');
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                floatingBtn.setAttribute('data-tp-label', options.floatingPreferencesButtonCaption() + '!');
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if...</p>
+            <ul>
+              <li>we want to add a "!" at the end of the caption?</li>
+              <li>customers could specify a function?</li>
+              <li>the function could return empty string?</li>
+            </ul>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                floatingBtn.setAttribute('data-tp-label', options.floatingPreferencesButtonCaption + '!');
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                floatingBtn.setAttribute('data-tp-label', t('floating_preferences_button.caption') + '!');
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                var caption = options.floatingPreferencesButtonCaption();
+                if (caption) {
+                  floatingBtn.setAttribute('data-tp-label', caption + '!');
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if...</p>
+            <ul>
+              <li>we want to add a "!" at the end of the caption?</li>
+              <li>customers could specify a function?</li>
+              <li>the function could return empty string?</li>
+              <li>[URGENT] we want "?" instead of "!"?</li>
+            </ul>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                floatingBtn.setAttribute('data-tp-label', options.floatingPreferencesButtonCaption + '!');
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                floatingBtn.setAttribute('data-tp-label', t('floating_preferences_button.caption') + '!');
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                var caption = options.floatingPreferencesButtonCaption();
+                if (caption) {
+                  floatingBtn.setAttribute('data-tp-label', caption + '!');
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if...</p>
+            <ul>
+              <li>we want to add a "!" at the end of the caption?</li>
+              <li>customers could specify a function?</li>
+              <li>the function could return empty string?</li>
+              <li>[URGENT] we want "?" instead of "!"?</li>
+            </ul>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                floatingBtn.setAttribute('data-tp-label', options.floatingPreferencesButtonCaption + '?');
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                floatingBtn.setAttribute('data-tp-label', t('floating_preferences_button.caption') + '?');
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                var caption = options.floatingPreferencesButtonCaption();
+                if (caption) {
+                  floatingBtn.setAttribute('data-tp-label', caption + '!');
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if...</p>
+            <ul>
+              <li>we want to add a "!" at the end of the caption?</li>
+              <li>customers could specify a function?</li>
+              <li>the function could return empty string?</li>
+              <li>[URGENT] we want "?" instead of "!"?</li>
+            </ul>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                floatingBtn.setAttribute('data-tp-label', options.floatingPreferencesButtonCaption + '?');
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                floatingBtn.setAttribute('data-tp-label', t('floating_preferences_button.caption') + '?');
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                var caption = options.floatingPreferencesButtonCaption();
+                if (caption) {
+                  floatingBtn.setAttribute('data-tp-label', caption + '?');
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if...</p>
+            <ul>
+              <li>we want to add a "!" at the end of the caption?</li>
+              <li>customers could specify a function?</li>
+              <li>the function could return empty string?</li>
+              <li>[URGENT] we want "?" instead of "!"?</li>
+              <li>we want to change button markup?</li>
+            </ul>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                floatingBtn.setAttribute('data-tp-label', options.floatingPreferencesButtonCaption + '?');
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                floatingBtn.setAttribute('data-tp-label', t('floating_preferences_button.caption') + '?');
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                var caption = options.floatingPreferencesButtonCaption();
+                if (caption) {
+                  floatingBtn.setAttribute('data-tp-label', caption + '?');
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if...</p>
+            <ul>
+              <li>we want to add a "!" at the end of the caption?</li>
+              <li>customers could specify a function?</li>
+              <li>the function could return empty string?</li>
+              <li>[URGENT] we want "?" instead of "!"?</li>
+              <li>we want to change button markup?</li>
+            </ul>
+            <pre data-id="caption"><code><script type="text/template">
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                floatingBtn.innerHTML = '<span>' + options.floatingPreferencesButtonCaption + '?</span>';
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                floatingBtn.innerHTML = '<span>' + t('floating_preferences_button.caption') + '?</span>';
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                var caption = options.floatingPreferencesButtonCaption();
+                if (caption) {
+                  floatingBtn.innerHTML = '<span>' caption + '?</span>';
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if...</p>
+            <ul>
+              <li>we want to add a "!" at the end of the caption?</li>
+              <li>customers could specify a function?</li>
+              <li>the function could return empty string?</li>
+              <li>[URGENT] we want "?" instead of "!"?</li>
+              <li>we want to change button markup?</li>
+            </ul>
+            <pre data-id="caption-designed"><code><script type="text/template">
+              var caption;
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                caption = options.floatingPreferencesButtonCaption;
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                caption = t('floating_preferences_button.caption');
+              }
+
+              if (caption) {
+                floatingBtn.setAttribute('data-tp-label', caption);
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>What if...</p>
+            <ul>
+              <li>we want to add a "!" at the end of the caption?</li>
+              <li>customers could specify a function?</li>
+              <li>the function could return empty string?</li>
+              <li>[URGENT] we want "?" instead of "!"?</li>
+              <li>we want to change button markup?</li>
+            </ul>
+            <pre data-id="caption-designed"><code><script type="text/template">
+              var caption;
+              if (typeof options.floatingPreferencesButtonCaption === 'string') {
+                caption = options.floatingPreferencesButtonCaption;
+              } else if (options.floatingPreferencesButtonCaption === true) {
+                caption = t('floating_preferences_button.caption');
+              } else if (typeof options.floatingPreferencesButtonCaption === 'function') {
+                caption = options.floatingPreferencesButtonCaption();
+              }
+
+              if (caption) {
+                floatingBtn.innerHTML = '<span>' + caption + '?</span>');
+              }
+            </script></code></pre>
           </section>
         </section>
 
@@ -453,7 +788,12 @@
                 <ul>
                   <li class="fragment">harder to read</li>
                   <li class="fragment">harder to debug</li>
-                  <li class="fragment">harder to understand for unexperienced devs</li>
+                  <li class="fragment">
+                    harder to understand for unexperienced devs
+                    <ul>
+                      <li class="fragment">executes combined functions in reverse order</li>
+                    </ul>
+                  </li>
                 </ul>
               </li>
               <li class="fragment">

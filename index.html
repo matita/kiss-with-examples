@@ -343,6 +343,8 @@
               }
             </script></code></pre>
           </section>
+
+          <section><h2>Keep it linear</h2></section>
         </section>
 
         <section id="separate-actions">
@@ -425,6 +427,11 @@
                 floatingBtn.setAttribute('data-tp-label', caption);
               }
             </script></code></pre>
+          </section>
+
+          <section>
+            <h2>Logically (and graphically) separate actions</h2>
+            <p>(mostly if they're in if...else)</p>
           </section>
         </section>
 
@@ -873,6 +880,12 @@
               }
             </script></code></pre>
           </section>
+
+          <section>
+            <h2>Logically (and graphically) separate actions</h2>
+            <p>(mostly if they're in if...else)</p>
+            <h2 class="fragment">Broken window theory</h2>
+          </section>
         </section>
 
         <section>
@@ -994,7 +1007,11 @@
               function processData(next, tcData, success) {
                 addAcmString(tcData);
                 removeOutOfBand(tcData);
-                next(tcData, success);
+                if (typeof next === 'function') {
+                  next(tcData, success);
+                } else {
+                  console.error('next is not a function');
+                }
               };
 
               function addAcmString(tcData) {
@@ -1012,8 +1029,7 @@
           </section>
 
           <section>
-            <a href="https://github.com/iubenda/iub_cookie_solution/pull/540">PR about getTCData processing</a>
-            <a href="https://github.com/iubenda/iub_cookie_solution/pull/540/commits/bf84da747e1a64eb4b6572b14915264109b597c3">middlewares</a>
+            <h2>Avoid abstraction if not needed</h2>
           </section>
         </section>
 

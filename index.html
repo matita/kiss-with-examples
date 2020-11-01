@@ -1362,7 +1362,7 @@
                 const options = getConfigurationWithDefaults(_iub.csConfiguration);
                 await loadDependencies(options);
                 const preferences = await loadPreferences(options);
-                if (somePreferencesAreMissing(options)) {
+                if (somePreferencesAreMissing(preferences, options)) {
                   showBanner(options);
                 } else {
                   activateBlockedScripts(preferences, options);

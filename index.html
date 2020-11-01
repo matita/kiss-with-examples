@@ -894,8 +894,45 @@
             <h2>Avoid abstraction if not needed</h2>
           </section>
 
+          <section data-auto-animate>
+            <p>TCF library returns an object when invoking <code>getTCData</code> and <code>addEventListener</code></p>
+            <pre data-id="tcdata"><code><script type="text/template">
+              {
+                cmpId: 123,
+                tcString: 'asdfasdfasdf',
+                outOfBand: {},
+                ...
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>To support Google we had to add a property <code>addtlConsent</code></p>
+            <pre data-id="tcdata"><code><script type="text/template">
+              {
+                cmpId: 123,
+                tcString: 'asdfasdfasdf',
+                outOfBand: {},
+                ...
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>To support Google we had to add a property <code>addtlConsent</code></p>
+            <pre data-id="tcdata"><code><script type="text/template">
+              {
+                cmpId: 123,
+                tcString: 'asdfasdfasdf',
+                outOfBand: {},
+                addtlConsent: '1~1.3.4',
+                ...
+              }
+            </script></code></pre>
+          </section>
+
           <section data-transition="fade">
-            <p>How it was</p>
+            <p>TCF library allows to change the value with middlewares</p>
             <pre data-id="process-data"><code><script type="text/template">
               const cmpApi = new CmpApi({
                 getTCData: addAcmString,
@@ -914,6 +951,10 @@
                 }
               };
             </script></code></pre>
+          </section>
+
+          <section>
+            <p>Then we had to remove <code>outOfBand</code> section in some conditions</p>
           </section>
 
           <section data-transition="fade">

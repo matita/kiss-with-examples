@@ -1076,11 +1076,300 @@
         </section>
 
         <section>
-          <section>Use pseudo-pseudo-code</section>
+          <section>
+            <h2>Use pseudo-pseudo-code</h2>
+          </section>
+
+          <section>
+            <p>The possible CS refactor was pseudo-code:</p>
+            <pre class="fragment"><code><script type="text/template">
+              function init() {
+                getConfigurationWithDefaults();
+                loadDependencies();
+                loadPreferences();
+                if (somePreferencesAreMissing()) {
+                  showBanner();
+                } else {
+                  activateBlockedScripts();
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <ul>
+              <li>Readable: almost plain English</li>
+              <li>Structured: has programming constructs (<code>if</code>...)</li>
+              <li>Understandable: doesn't have implementation details</li>
+              <li>Searchable: it's like a ToC</li>
+            </ul>
+            <pre data-id="cs-refactored"><code><script type="text/template">
+              function init() {
+                getConfigurationWithDefaults();
+                loadDependencies();
+                loadPreferences();
+                if (somePreferencesAreMissing()) {
+                  showBanner();
+                } else {
+                  activateBlockedScripts();
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>Let's change it into pseudo-pseudo (aka actual) code</p>
+            <pre data-id="cs-refactored"><code data-line-numbers="|2"><script type="text/template">
+              function init() {
+                getConfigurationWithDefaults();
+                loadDependencies();
+                loadPreferences();
+                if (somePreferencesAreMissing()) {
+                  showBanner();
+                } else {
+                  activateBlockedScripts();
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate="">
+            <pre data-id="getConfigurationWithDefaults"><code><script type="text/template">
+              function getConfigurationWithDefaults() {
+                return deepMerge({}, defaults, options);
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate="">
+            <pre data-id="getConfigurationWithDefaults"><code><script type="text/template">
+              var obj = _iub.jlib.obj;
+              var defaults = { ... };
+
+              function getConfigurationWithDefaults(options) {
+                return obj.deepMerge({}, defaults, options);
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="cs-refactored"><code data-line-numbers="2"><script type="text/template">
+              function init() {
+                getConfigurationWithDefaults();
+                loadDependencies();
+                loadPreferences();
+                if (somePreferencesAreMissing()) {
+                  showBanner();
+                } else {
+                  activateBlockedScripts();
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="cs-refactored"><code data-line-numbers="2|3"><script type="text/template">
+              function init() {
+                var options = getConfigurationWithDefaults(_iub.csConfiguration);
+                loadDependencies();
+                loadPreferences();
+                if (somePreferencesAreMissing()) {
+                  showBanner();
+                } else {
+                  activateBlockedScripts();
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="loadDependencies"><code><script type="text/template">
+              function loadDependencies() {
+                if (isTcEnabled()) {
+                  loadTcfLib();
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="loadDependencies"><code><script type="text/template">
+              function loadDependencies() {
+                if (options.enableTcf) {
+                  loadTcfLib();
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="loadDependencies"><code><script type="text/template">
+              function loadDependencies(options) {
+                if (options.enableTcf) {
+                  loadTcfLib();
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="loadDependencies"><code><script type="text/template">
+              var TCF_LIB_URL = '//cdn.iubenda.com/cs/tcf/tcf-v2.js';
+
+              function loadDependencies(options) {
+                if (options.enableTcf) {
+                  loadScript(TCF_LIB_URL);
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="loadDependencies"><code data-line-numbers="9-16"><script type="text/template">
+              var TCF_LIB_URL = '//cdn.iubenda.com/cs/tcf/tcf-v2.js';
+
+              function loadDependencies(options) {
+                if (options.enableTcf) {
+                  loadScript(TCF_LIB_URL);
+                }
+              }
+
+              function loadScript(url) {
+                return new Promise(function(resolve) {
+                  var s = document.createElement('script');
+                  s.src = url;
+                  s.onload = resolve;
+                  document.head.appendChild(s);
+                });
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="loadDependencies"><code data-line-numbers="3-9"><script type="text/template">
+              var TCF_LIB_URL = '//cdn.iubenda.com/cs/tcf/tcf-v2.js';
+
+              function loadDependencies(options) {
+                if (options.enableTcf) {
+                  return loadScript(TCF_LIB_URL);
+                }
+
+                return Promise.resolve();
+              }
+
+              function loadScript(url) {
+                return new Promise(function(resolve) {
+                  var s = document.createElement('script');
+                  s.src = url;
+                  s.onload = resolve;
+                  document.head.appendChild(s);
+                });
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="cs-refactored"><code data-line-numbers="3"><script type="text/template">
+              function init() {
+                var options = getConfigurationWithDefaults(_iub.csConfiguration);
+                loadDependencies();
+                loadPreferences();
+                if (somePreferencesAreMissing()) {
+                  showBanner();
+                } else {
+                  activateBlockedScripts();
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <pre data-id="cs-refactored"><code data-line-numbers="3"><script type="text/template">
+              function init() {
+                var options = getConfigurationWithDefaults(_iub.csConfiguration);
+                loadDependencies(options).then(function() {
+                  loadPreferences();
+                  if (somePreferencesAreMissing()) {
+                    showBanner();
+                  } else {
+                    activateBlockedScripts();
+                  }
+                });
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>Fast forward...:</p>
+            <pre data-id="cs-refactored"><code><script type="text/template">
+              function init() {
+                var options = getConfigurationWithDefaults(_iub.csConfiguration);
+                loadDependencies(options).then(function() {
+                  loadPreferences(options).then(function(preferences) {
+                    if (somePreferencesAreMissing(preferences, options)) {
+                      showBanner(options);
+                    } else {
+                      activateBlockedScripts(preferences, options);
+                    }
+                  });
+                });
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>If we go back to pseudo-code:</p>
+            <pre data-id="cs-refactored"><code><script type="text/template">
+              function init() {
+                getConfigurationWithDefaults();
+                loadDependencies();
+                loadPreferences();
+                if (somePreferencesAreMissing()) {
+                  showBanner();
+                } else {
+                  activateBlockedScripts();
+                }
+              }
+            </script></code></pre>
+          </section>
         </section>
 
         <section>
-          <section>Use ES6</section>
+          <section>
+            <h2>Use ES6</h2>
+          </section>
+
+          <section data-auto-animate>
+            <p>Pseudo-code:</p>
+            <pre data-id="cs-refactored"><code><script type="text/template">
+              function init() {
+                getConfigurationWithDefaults();
+                loadDependencies();
+                loadPreferences();
+                if (somePreferencesAreMissing()) {
+                  showBanner();
+                } else {
+                  activateBlockedScripts();
+                }
+              }
+            </script></code></pre>
+          </section>
+
+          <section data-auto-animate>
+            <p>Actual code:</p>
+            <pre data-id="cs-refactored"><code><script type="text/template">
+              async function init() {
+                const options = getConfigurationWithDefaults(_iub.csConfiguration);
+                await loadDependencies(options);
+                const preferences = await loadPreferences(options);
+                if (somePreferencesAreMissing(options)) {
+                  showBanner(options);
+                } else {
+                  activateBlockedScripts(preferences, options);
+                }
+              }
+            </script></code></pre>
+          </section>
         </section>
       </div>
     </div>

@@ -143,6 +143,23 @@
             <h2>Avoid abstraction if not needed</h2>
           </section>
 
+          <section>
+            <p>What is an abstraction</p>
+            <ul>
+              <li>generalization of a behaviour</li>
+              <li>obscure by nature</li>
+            </ul>
+          </section>
+
+          <section>
+            <p>Why use abstraction</p>
+            <ul>
+              <li>to remove code duplication</li>
+              <li>to simplify development</li>
+              <li>to be used by 3rd party developers</li>
+            </ul>
+          </section>
+
           <section data-auto-animate>
             <p>TCF library returns an object when invoking <code>getTCData</code> and <code>addEventListener</code></p>
             <pre data-id="tcdata"><code><script type="text/template">
@@ -321,6 +338,12 @@
 
           <section>
             <h2>Avoid abstraction if not needed</h2>
+            <p>Only use it:</p>
+            <ul>
+              <li>to remove code duplication</li>
+              <li>to simplify development</li>
+              <li>to be used by 3rd party developers</li>
+            </ul>
           </section>
         </section>
 
@@ -861,7 +884,7 @@
           <section>
             <h2>Logically (and graphically) separate actions</h2>
             <p>(mostly if they're in if...else)</p>
-            <h2 class="fragment">Broken window theory</h2>
+            <h2>Broken window theory</h2>
           </section>
         </section>
 
@@ -1051,7 +1074,7 @@
             <p>Why it's bad:</p>
             <ul>
               <li class="fragment">a single function does a lot of things</li>
-              <li class="fragment">their name is a lie</li>
+              <li class="fragment">the function name is a lie</li>
               <li class="fragment">you have to read the whole code to know what's going on</li>
               <li class="fragment">modules don't have a clear hierarchy</li>
               <li class="fragment">modules change properties of other modules</li>
@@ -1335,6 +1358,17 @@
               }
             </script></code></pre>
           </section>
+
+          <section>
+            <h2>Use pseudo-pseudo-code</h2>
+            <ul>
+              <li>separate business logic from implementation details</li>
+              <li>self-documented code</li>
+              <li>keep code compact</li>
+              <li>easy to mock for incremental development</li>
+              <li>every function does a single thing</li>
+            </ul>
+          </section>
         </section>
 
         <section id="use-es6">
@@ -1359,7 +1393,7 @@
           </section>
 
           <section data-auto-animate>
-            <p>Actual code:</p>
+            <p>Actual ES6 code:</p>
             <pre data-id="cs-refactored"><code><script type="text/template">
               async function init() {
                 const options = getConfigurationWithDefaults(_iub.csConfiguration);

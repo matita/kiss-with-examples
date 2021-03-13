@@ -163,6 +163,9 @@
           <section data-auto-animate>
             <p>TCF library returns an object when invoking <code>getTCData</code> and <code>addEventListener</code></p>
             <pre data-id="tcdata"><code><script type="text/template">
+              __tcfapi('getTCData', 2, function(tcData) { /* ... */ })
+
+              // the tcData object is like this:
               {
                 cmpId: 123,
                 tcString: 'asdfasdfasdf',
@@ -198,7 +201,7 @@
           </section>
 
           <section data-transition="fade">
-            <p>TCF library allows to change the value with middlewares</p>
+            <p>To achieve that TCF library allows to change the value with middlewares</p>
             <pre data-id="process-data"><code><script type="text/template">
               const cmpApi = new CmpApi({
                 getTCData: addAcmString,
@@ -283,7 +286,7 @@
                   <li class="fragment">
                     harder to understand for unexperienced devs
                     <ul>
-                      <li class="fragment">executes combined functions in reverse order</li>
+                      <li class="fragment">e.g. executes combined functions in reverse order</li>
                     </ul>
                   </li>
                 </ul>
@@ -315,6 +318,7 @@
               function processData(next, tcData, success) {
                 addAcmString(tcData);
                 removeOutOfBand(tcData);
+
                 if (typeof next === 'function') {
                   next(tcData, success);
                 } else {

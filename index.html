@@ -362,23 +362,23 @@
               floatingPreferencesButtonCaption: true
             </code></pre>
             <p>English</p>
-            <img src="http://matteo.colucci.s3.iubenda.com/Screen-Shot-2020-10-11-17-38-48.png">
+            <img src="https://personal.iubenda.com/matteo.colucci/Screen-Shot-2020-10-11-17-38-48.png">
             <p>Italian</p>
-            <img src="http://matteo.colucci.s3.iubenda.com/Screen-Shot-2020-10-11-17-41-08.png">
+            <img src="https://personal.iubenda.com/matteo.colucci/Screen-Shot-2020-10-11-17-41-08.png">
           </section>
 
           <section>
             <pre><code>
               floatingPreferencesButtonCaption: 'Privacy'
             </code></pre>
-            <img src="http://matteo.colucci.s3.iubenda.com/Screen-Shot-2020-10-11-17-42-23.png">
+            <img src="https://personal.iubenda.com/matteo.colucci/Screen-Shot-2020-10-11-17-42-23.png">
           </section>
 
           <section>
             <pre><code>
               floatingPreferencesButtonCaption: false // (default)
             </code></pre>
-            <img src="http://matteo.colucci.s3.iubenda.com/Screen-Shot-2020-10-11-17-37-26.png">
+            <img src="https://personal.iubenda.com/matteo.colucci/Screen-Shot-2020-10-11-17-37-26.png">
           </section>
 
           <section>
@@ -897,10 +897,10 @@
 
           <section>
             <p>What does CS do:</p>
-            <ul>
-              <li class="fragment">shows a banner if user didn't express preferences</li>
-              <li class="fragment">activates scripts if user expressed preferences</li>
-            </ul>
+            <ol>
+              <li>shows a banner if user didn't express preferences</li>
+              <li>activates scripts if user expressed preferences</li>
+            </ol>
           </section>
 
           <section>
@@ -1077,12 +1077,12 @@
           <section>
             <p>Why it's bad:</p>
             <ul>
-              <li class="fragment">a single function does a lot of things</li>
-              <li class="fragment">the function name is a lie</li>
-              <li class="fragment">you have to read the whole code to know what's going on</li>
-              <li class="fragment">modules don't have a clear hierarchy</li>
-              <li class="fragment">modules change properties of other modules</li>
-              <li class="fragment">changing order of things is hard</li>
+              <li>a single function does a lot of things</li>
+              <li>the function name is a lie</li>
+              <li>you have to read the whole code to know what's going on</li>
+              <li>modules don't have a clear hierarchy</li>
+              <li>modules change properties of other modules</li>
+              <li>changing order of things is hard</li>
             </ul>
           </section>
 
@@ -1112,7 +1112,7 @@
 
           <section>
             <p>The possible CS refactor was pseudo-code:</p>
-            <pre class="fragment"><code><script type="text/template">
+            <pre><code><script type="text/template">
               function init() {
                 getConfigurationWithDefaults();
                 loadDependencies();
